@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage>{
                 
               ),
                SizedBox(height: 20,),
-              TextFormField(
+              if(!_forLogin) TextFormField(
                 controller: _textControllerPasswordConfirm,
                 obscureText: _isObscure,
                 decoration: InputDecoration(

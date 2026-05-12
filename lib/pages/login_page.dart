@@ -81,12 +81,22 @@ class _LoginPageState extends State<LoginPage>{
                SizedBox(height: 20,),
               TextFormField(
                 controller: _textControllerPasswordConfirm,
+                obscureText: _isObscure,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.password),
                   hintText: 'Retap your password',
                   labelText: 'Retap your Password *',
                   border: OutlineInputBorder(
                   ),
+                   suffixIcon: IconButton(
+                  onPressed: _isLoading? null: () {
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
+                ),
+                
                 ),
 
                 validator:(value){

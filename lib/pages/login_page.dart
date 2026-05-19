@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskflow/services/auth_services.dart';
+import 'MyHomePage.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key,required this.title});
+  const LoginPage({super.key,required this.title,required this.isDarkMode,
+    required this.onToggleTheme,});
 
   final String title;
+  final bool isDarkMode;
+  final Function(bool) onToggleTheme;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -25,10 +29,17 @@ class _LoginPageState extends State<LoginPage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
+         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+
+          actions: [
+            Switch(
+              value: widget.isDarkMode,
+              onChanged: widget.onToggleTheme,
+            )
+          ],
+          centerTitle: true,
+        ),
       body:SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Form(
@@ -74,7 +85,7 @@ class _LoginPageState extends State<LoginPage>{
                       _isObscure = !_isObscure;
                     });
                   },
-                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
+                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off,  color: widget.isDarkMode? Colors.white:Colors.black,)
                 ),
                 ),
                 validator:(value){
@@ -105,7 +116,7 @@ class _LoginPageState extends State<LoginPage>{
                       _isObscure = !_isObscure;
                     });
                   },
-                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: Colors.black,)
+                  icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off, color: widget.isDarkMode?Colors.white:Colors.black,)
                 ),
                 
                 ),
@@ -135,12 +146,19 @@ class _LoginPageState extends State<LoginPage>{
                       try{
                         if(_forLogin){
                            await AuthServices().signInWithEmailAndPassword(
-                          _textControllerEmail.text,
-                          _textControllerPassword.text);
+                          _textControllerEmail.text, _textControllerPassword.text);
+                                  if (!mounted) return;
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (_) => const MyHomePage(title: 'Home Page')),
+                                  );
                         }else{
                            await AuthServices().createUserWithEmailAndPassword(
                           _textControllerEmail.text,
                           _textControllerPassword.text);
+                          if (!mounted) return;
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (_) => const MyHomePage(title: 'Home Page')),
+                                  );
                         }
                           setState(() {
                       _isLoading=false;
@@ -161,7 +179,31 @@ class _LoginPageState extends State<LoginPage>{
                     },
                  child:_isLoading ? const CircularProgressIndicator():  Text(_forLogin ? "se connecter": "s'inscrire")),
               ),
-
+              SizedBox(height: 20,),
+              SizedBox(
+                child: TextButton(
+                  onPressed: (){
+                    _textControllerEmail.text="";
+                    _textControllerPassword.text="";
+                    _textControllerPasswordConfirm.text="";
+                    setState(() {
+                      _forLogin=! _forLogin;
+                    });
+                  } , 
+                  child: Text(_forLogin ? "J'ai pas un compte, s'inscrire": "J'ai deja un compte ,se connecter")),
+              ),
+               const Divider(),
+               SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                onPressed: (){
+                  AuthServices().signInWithGoogle();
+                },
+                icon: Image.asset("assets/images/google.png",height: 30,),
+                label: const Text("Continuer avec Google")),
+               ),
+              
               ],
           ),
           

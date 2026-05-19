@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:taskflow/pages/login_page.dart';
+import 'package:taskflow/services/auth_services.dart';
 
 class MyHomePage extends StatefulWidget{
  const MyHomePage({super.key, required this.title});
@@ -27,18 +29,18 @@ class _MyHomePageState extends State<MyHomePage>{
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            // DrawerHeader(
-            //   decoration: BoxDecoration(
-            //     color: Theme.of(context).colorScheme.primary,
-            //   ),
-            //   child: Text(
-            //     'Menu',
-            //     style: TextStyle(
-            //       color: Colors.white,
-            //       fontSize: 24,
-            //     ),
-            //   ),
-            // ),
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
@@ -57,7 +59,12 @@ class _MyHomePageState extends State<MyHomePage>{
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () {
+                AuthServices().signOut();
                 Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) =>  LoginPage(title: 'Login Page', isDarkMode: false, onToggleTheme: (value) {},)),
+                );
               },
             ),
           ],
